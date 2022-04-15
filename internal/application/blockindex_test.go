@@ -7,6 +7,7 @@ import (
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/rickyseezy/block/internal/datasources/mocks"
 	"github.com/rickyseezy/block/internal/domain/models"
+	"github.com/rickyseezy/block/internal/usecases"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
 	"math/big"
@@ -90,15 +91,19 @@ var blockMockResponse = []*models.Block{
 
 type BlockIndexTestSuite struct {
 	suite.Suite
+	blockIndexApp usecases.BlockIndex
 }
 
-func (suite *BlockIndexTestSuite) TestGetGroup() {
+func (suite *BlockIndexTestSuite) SetupTest() {
 	br := mocks.NewBlockRepository()
 	gr := mocks.NewMockGroupRepository()
 	ir := mocks.NewIndexRepository()
 	initMock(br, gr, ir)
 
-	blockIndexApp := NewBlockIndex(br, gr, ir)
+	suite.blockIndexApp = NewBlockIndex(br, gr, ir)
+}
+
+func (suite *BlockIndexTestSuite) TestGetGroup() {
 	tests := []struct {
 		title    string
 		input    string
@@ -120,7 +125,7 @@ func (suite *BlockIndexTestSuite) TestGetGroup() {
 	}
 
 	for _, tt := range tests {
-		group, err := blockIndexApp.GetGroup(context.Background(), tt.input)
+		group, err := suite.blockIndexApp.GetGroup(context.Background(), tt.input)
 		if tt.wantErr {
 			assert.NotNil(suite.T(), err)
 			assert.Nil(suite.T(), group)
@@ -132,12 +137,6 @@ func (suite *BlockIndexTestSuite) TestGetGroup() {
 }
 
 func (suite *BlockIndexTestSuite) TestGetIndex() {
-	br := mocks.NewBlockRepository()
-	gr := mocks.NewMockGroupRepository()
-	ir := mocks.NewIndexRepository()
-	initMock(br, gr, ir)
-
-	blockIndexApp := NewBlockIndex(br, gr, ir)
 	tests := []struct {
 		title    string
 		input    string
@@ -159,7 +158,7 @@ func (suite *BlockIndexTestSuite) TestGetIndex() {
 	}
 
 	for _, tt := range tests {
-		index, err := blockIndexApp.GetIndex(context.Background(), tt.input)
+		index, err := suite.blockIndexApp.GetIndex(context.Background(), tt.input)
 		if tt.wantErr {
 			assert.NotNil(suite.T(), err)
 			assert.Nil(suite.T(), index)
@@ -171,12 +170,6 @@ func (suite *BlockIndexTestSuite) TestGetIndex() {
 }
 
 func (suite *BlockIndexTestSuite) TestGetBlock() {
-	br := mocks.NewBlockRepository()
-	gr := mocks.NewMockGroupRepository()
-	ir := mocks.NewIndexRepository()
-	initMock(br, gr, ir)
-
-	blockIndexApp := NewBlockIndex(br, gr, ir)
 	tests := []struct {
 		title    string
 		input    string
@@ -222,7 +215,7 @@ func (suite *BlockIndexTestSuite) TestGetBlock() {
 	}
 
 	for _, tt := range tests {
-		block, err := blockIndexApp.GetBlock(context.Background(), tt.input)
+		block, err := suite.blockIndexApp.GetBlock(context.Background(), tt.input)
 		if tt.wantErr {
 			assert.NotNil(suite.T(), err)
 			assert.Nil(suite.T(), block)
