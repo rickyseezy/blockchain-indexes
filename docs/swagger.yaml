@@ -1,0 +1,204 @@
+basePath: /
+definitions:
+  big.Int:
+    type: object
+  models.AppResponse:
+    properties:
+      message:
+        type: string
+    type: object
+  models.Block:
+    properties:
+      blockInformation:
+        $ref: '#/definitions/types.Header'
+      blockNumber:
+        $ref: '#/definitions/big.Int'
+    type: object
+  models.Group:
+    properties:
+      id:
+        $ref: '#/definitions/big.Int'
+      indexes:
+        items:
+          $ref: '#/definitions/big.Int'
+        type: array
+      name:
+        type: string
+    type: object
+  models.Index:
+    properties:
+      ethPriceInWei:
+        $ref: '#/definitions/big.Int'
+      name:
+        type: string
+      percentageChange:
+        $ref: '#/definitions/big.Int'
+      usdCapitalization:
+        $ref: '#/definitions/big.Int'
+      usdPriceInCents:
+        $ref: '#/definitions/big.Int'
+    type: object
+  types.Header:
+    properties:
+      baseFeePerGas:
+        $ref: '#/definitions/big.Int'
+        description: BaseFee was added by EIP-1559 and is ignored in legacy headers.
+      difficulty:
+        $ref: '#/definitions/big.Int'
+      extraData:
+        items:
+          type: integer
+        type: array
+      gasLimit:
+        type: integer
+      gasUsed:
+        type: integer
+      logsBloom:
+        items:
+          type: integer
+        type: array
+      miner:
+        items:
+          type: integer
+        type: array
+      mixHash:
+        items:
+          type: integer
+        type: array
+      nonce:
+        items:
+          type: integer
+        type: array
+      number:
+        $ref: '#/definitions/big.Int'
+      parentHash:
+        items:
+          type: integer
+        type: array
+      receiptsRoot:
+        items:
+          type: integer
+        type: array
+      sha3Uncles:
+        items:
+          type: integer
+        type: array
+      stateRoot:
+        items:
+          type: integer
+        type: array
+      timestamp:
+        type: integer
+      transactionsRoot:
+        items:
+          type: integer
+        type: array
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: Simple server to interact with Ethereum Blockchain.
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  title: Blockchain Indexes API
+  version: "1.0"
+paths:
+  /blocks/{search}:
+    get:
+      consumes:
+      - application/json
+      description: Get block information
+      parameters:
+      - description: search param can have the following values BlockNumber | BlockHash
+          | 'latest'
+        in: path
+        name: search
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Block'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.AppResponse'
+      summary: Get block
+      tags:
+      - Blocks
+  /groups:
+    get:
+      consumes:
+      - application/json
+      description: List groups of index ids
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Group'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.AppResponse'
+      summary: List groups
+      tags:
+      - Groups
+  /groups/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Show a group of index ids
+      parameters:
+      - description: group ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Group'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.AppResponse'
+      summary: Get group
+      tags:
+      - Groups
+  /indexes/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Show an index
+      parameters:
+      - description: index ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Index'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.AppResponse'
+      summary: Get index
+      tags:
+      - Indexes
+swagger: "2.0"

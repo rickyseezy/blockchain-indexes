@@ -1,0 +1,11 @@
+services:
+  app:
+    build:
+      context: .
+      target: base
+    environment:
+      - APP_ENV=development
+    volumes:
+      - .:/go/src/github.com/rickyseezy/block
+    ports:
+      - "8080:8080"
